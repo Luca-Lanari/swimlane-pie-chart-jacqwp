@@ -1,0 +1,23 @@
+<ngx-charts-pie-chart
+  [view]="view"
+  [scheme]="colorScheme"
+  [results]="single"
+  [gradient]="gradient"
+  [labels]="showLabels"
+  [doughnut]="isDoughnut"
+>
+</ngx-charts-pie-chart>
+
+<div *ngFor="let label of labels" style="margin-bottom: 10px">
+  <button
+    style="margin-right: 20px;"
+    type="button"
+    (click)="subtractionValues(label)"
+  >
+    -
+  </button>
+  <span style="margin-right: 10px;">{{ label }}</span>
+  <button type="button" (click)="addValues(label)" [disabled]="disableAdd">
+    +
+  </button>
+</div>
