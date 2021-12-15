@@ -1,4 +1,5 @@
 import { Component, NgModule } from '@angular/core';
+import { OnInit } from '@angular/core/src/metadata';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { single } from './data';
@@ -8,8 +9,9 @@ import { single } from './data';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   single: any[];
+  filtered: any[];
   view: any[] = [700, 400];
 
   // options
@@ -28,9 +30,17 @@ export class AppComponent {
 
   labels = ['Assicurativo', 'Bilanciato', 'Spesato'];
 
-  constructor() {
+  constructor() {}
+
+  ngOnInit() {
     Object.assign(this, { single });
-    this.disableAdd = this.sumValues(this.single) >= 100;
+    if (this.sumValues(this.single) >= 100) {
+      this.disableAdd = true;
+    } else {
+      const difference = 100 - this.sumValues(this.single);
+      this.single = [...this.single, { name: 'pivot', value: difference }];
+      console.log(this.single);
+    }
   }
 
   onSelect(data): void {
@@ -44,14 +54,6 @@ export class AppComponent {
   onDeactivate(data): void {
     console.log('Deactivate', JSON.parse(JSON.stringify(data)));
   }
-
-  add() {
-    console.log(this.single);
-    const name = 'Assicurativo';
-    this.addValues(name);
-  }
-
-  remove() {}
 
   sumValues(data: any) {
     let sum = 0;
@@ -74,6 +76,7 @@ export class AppComponent {
       const idx = this.indexOfName(this.single, name);
       console.log('idx: ', idx);
       this.single[idx].value = this.single[idx].value + 25;
+
       this.single = [...this.single];
       this.disableAdd = this.sumValues(this.single) >= 100;
     }
