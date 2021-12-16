@@ -22,13 +22,11 @@ export class AppComponent implements OnInit {
   legendPosition: string = 'below';
 
   colorScheme = {
-    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA'],
+    domain: ['#5AA454', '#A10A28', '#C7B42C'],
   };
 
-  disableAdd: boolean = false;
+  disableAllAdd: boolean = false;
   disableRemove: boolean = false;
-
-  labels = ['Assicurativo', 'Bilanciato', 'Spesato'];
 
   constructor() {}
 
@@ -37,26 +35,15 @@ export class AppComponent implements OnInit {
     //Original data into filteredSingle
     this.filteredSingle = JSON.parse(JSON.stringify(this.single));
     if (this.sumValues(this.filteredSingle) >= 100) {
-      this.disableAdd = true;
+      this.disableAllAdd = true;
     } else {
       const difference = 100 - this.sumValues(this.single);
       this.single = [...this.single, { name: 'pivot', value: difference }];
+      this.colorScheme.domain.push('#AAAAAA');
     }
   }
 
-  onSelect(data): void {
-    console.log('Item clicked', JSON.parse(JSON.stringify(data)));
-  }
-
-  onActivate(data): void {
-    console.log('Activate', JSON.parse(JSON.stringify(data)));
-  }
-
-  onDeactivate(data): void {
-    console.log('Deactivate', JSON.parse(JSON.stringify(data)));
-  }
-
-  sumValues(data: any) {
+  private sumValues(data: any) {
     let sum = 0;
     for (let val in data) {
       sum = sum + data[val].value;
@@ -70,33 +57,41 @@ export class AppComponent implements OnInit {
 
   addValues(name: string) {
     if (this.sumValues(this.filteredSingle) >= 100) {
-      this.disableAdd = true;
+      this.disableAllAdd = true;
     } else {
       const idx = this.indexOfName(this.single, name);
       this.single[idx].value = this.single[idx].value + 25;
       const idxPivot = this.indexOfName(this.single, 'pivot');
-      if (idxPivot >= 0) {
+      if (idxPivot >= 0 && this.single[idxPivot].value >= 0) {
         this.single[idxPivot].value = this.single[idxPivot].value - 25;
+      } else {
+        const difference = 100 - this.sumValues(this.single);
+        this.single = [...this.single, { name: 'pivot', value: difference }];
       }
+      const deletedPivot = this.single.filter((el) => el.name !== 'pivot');
+      this.filteredSingle = JSON.parse(JSON.stringify(deletedPivot));
       this.single = [...this.single];
-      this.disableAdd = this.sumValues(this.filteredSingle) >= 100;
+      this.disableAllAdd = this.sumValues(this.filteredSingle) >= 100;
     }
-    console.log('addValues: ', this.single);
   }
 
-  subtractionValues(name: string) {
-    if (this.sumValues(this.single) <= 100) {
+  removeValues(name: string) {
+    if (this.sumValues(this.filteredSingle) <= 100) {
       const idx = this.indexOfName(this.single, name);
       this.single[idx].value = this.single[idx].value - 25;
       const idxPivot = this.indexOfName(this.single, 'pivot');
-      if (idxPivot >= 0) {
+      if (idxPivot >= 0 && this.single[idxPivot].value <= 100) {
         this.single[idxPivot].value = this.single[idxPivot].value + 25;
+      } else {
+        const difference = 100 - this.sumValues(this.single);
+        this.single = [...this.single, { name: 'pivot', value: difference }];
       }
+      const deletedPivot = this.single.filter((el) => el.name !== 'pivot');
+      this.filteredSingle = JSON.parse(JSON.stringify(deletedPivot));
       this.single = [...this.single];
-      this.disableAdd = this.sumValues(this.single) >= 100;
+      this.disableAllAdd = this.sumValues(this.filteredSingle) >= 100;
     } else {
-      this.disableAdd = true;
+      this.disableAllAdd = true;
     }
-    console.log('subtractionValues: ', this.single);
   }
 }

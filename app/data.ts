@@ -1,7 +1,7 @@
 export var single = [
   {
     name: 'Assicurativo',
-    value: 25,
+    value: 50,
   },
   {
     name: 'Bilanciato',
