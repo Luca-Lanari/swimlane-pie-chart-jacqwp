@@ -22,16 +22,18 @@ export class AppComponent implements OnInit {
   legendPosition: string = 'below';
 
   colorScheme = {
-    domain: ['#5AA454', '#A10A28', '#C7B42C'],
+    domain: [],
   };
 
   disableAllAdd: boolean = false;
-  disableRemove: boolean = false;
 
   constructor() {}
 
   ngOnInit() {
     Object.assign(this, { single });
+    this.colorScheme.domain = [...new Set(this.single.map((el) => el.color))];
+    this.colorScheme.domain.push('#AAAAAA');
+
     //Original data into filteredSingle
     this.filteredSingle = JSON.parse(JSON.stringify(this.single));
     if (this.sumValues(this.filteredSingle) >= 100) {
@@ -39,7 +41,6 @@ export class AppComponent implements OnInit {
     } else {
       const difference = 100 - this.sumValues(this.single);
       this.single = [...this.single, { name: 'pivot', value: difference }];
-      this.colorScheme.domain.push('#AAAAAA');
     }
   }
 
