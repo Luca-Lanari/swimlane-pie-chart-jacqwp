@@ -11,7 +11,7 @@ import { single } from './data';
 })
 export class AppComponent implements OnInit {
   single: any[];
-  filtered: any[];
+  filteredSingle: any[];
   view: any[] = [700, 400];
 
   // options
@@ -34,12 +34,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     Object.assign(this, { single });
-    if (this.sumValues(this.single) >= 100) {
+    //Original data into filteredSingle
+    this.filteredSingle = JSON.parse(JSON.stringify(this.single));
+    if (this.sumValues(this.filteredSingle) >= 100) {
       this.disableAdd = true;
     } else {
       const difference = 100 - this.sumValues(this.single);
       this.single = [...this.single, { name: 'pivot', value: difference }];
-      console.log(this.single);
     }
   }
 
@@ -58,7 +59,6 @@ export class AppComponent implements OnInit {
   sumValues(data: any) {
     let sum = 0;
     for (let val in data) {
-      console.log(data[val]);
       sum = sum + data[val].value;
     }
     return sum;
@@ -69,32 +69,34 @@ export class AppComponent implements OnInit {
   }
 
   addValues(name: string) {
-    console.log(this.single);
-    if (this.sumValues(this.single) >= 100) {
+    if (this.sumValues(this.filteredSingle) >= 100) {
       this.disableAdd = true;
     } else {
       const idx = this.indexOfName(this.single, name);
-      console.log('idx: ', idx);
       this.single[idx].value = this.single[idx].value + 25;
-
+      const idxPivot = this.indexOfName(this.single, 'pivot');
+      if (idxPivot >= 0) {
+        this.single[idxPivot].value = this.single[idxPivot].value - 25;
+      }
       this.single = [...this.single];
-      this.disableAdd = this.sumValues(this.single) >= 100;
+      this.disableAdd = this.sumValues(this.filteredSingle) >= 100;
     }
-    console.log(this.single);
+    console.log('addValues: ', this.single);
   }
 
   subtractionValues(name: string) {
-    console.log(this.single);
     if (this.sumValues(this.single) <= 100) {
       const idx = this.indexOfName(this.single, name);
-      console.log('idx: ', idx);
       this.single[idx].value = this.single[idx].value - 25;
+      const idxPivot = this.indexOfName(this.single, 'pivot');
+      if (idxPivot >= 0) {
+        this.single[idxPivot].value = this.single[idxPivot].value + 25;
+      }
       this.single = [...this.single];
       this.disableAdd = this.sumValues(this.single) >= 100;
-      console.log(this.disableAdd);
     } else {
       this.disableAdd = true;
     }
-    console.log(this.single);
+    console.log('subtractionValues: ', this.single);
   }
 }

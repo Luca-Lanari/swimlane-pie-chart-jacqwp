@@ -8,16 +8,21 @@
 >
 </ngx-charts-pie-chart>
 
-<div *ngFor="let label of labels" style="margin-bottom: 10px">
+<div *ngFor="let single of filteredSingle" style="margin-bottom: 10px">
   <button
     style="margin-right: 20px;"
     type="button"
-    (click)="subtractionValues(label)"
+    (click)="subtractionValues(single.name)"
+    [disabled]="single.value === 0"
   >
     -
   </button>
-  <span style="margin-right: 10px;">{{ label }}</span>
-  <button type="button" (click)="addValues(label)" [disabled]="disableAdd">
+  <span style="margin-right: 10px;">{{ single.name }}</span>
+  <button
+    type="button"
+    (click)="addValues(single.name)"
+    [disabled]="disableAdd"
+  >
     +
   </button>
 </div>
